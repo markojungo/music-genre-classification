@@ -41,6 +41,10 @@ def get_args():
     args, _ = parser.parse_known_args()
     return args
 
+# make data loaders
+# make optimizer
+# contain traning loop
+# declare hyper params
 def train(args):
     pass
 
