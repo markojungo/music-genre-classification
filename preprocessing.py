@@ -22,9 +22,9 @@ PREPROCESSED_DIR = 'data/fma_preprocessed/'
 AUDIO_DIR = 'data/fma_small'
 # settings
 N = 3 # number of spectrograms to generate
-HOP_LENGTH = 1024 # number of samples per time-step in spectrogram
-N_MELS = 256 # number of bins in spectrogram. Height of image
-TIME_STEPS = 255 # number of time-steps. Width of image - 1
+HOP_LENGTH = 512 # number of samples per time-step in spectrogram
+N_MELS = 128 # number of bins in spectrogram. Height of image
+TIME_STEPS = 127 # number of time-steps. Width of image - 1
 
 # Global Variables
 # shared for preprocess_Y
@@ -57,6 +57,17 @@ def generate_logspectrogram(y, sr, n_mels, hop_length):
     img = scale_minmax(mels, 0, 255).astype(np.uint8) # min-max scale to fit inside 8-bit range
     img = np.flip(img, axis=0) # put low frequencies at the bottom in image
     img = 255-img # invert. make black==more energy
+    img = img[np.newaxis, ...] 
+    
+    return img
+
+def generate_logspectrogram2(y, sr, n_mels, hop_length):
+    """Different method of generating log spectrograms.
+    """
+    S = librosa.stft(y, n_fft=hop_length*2, hop_length=hop_length, win_length=hop_length*2)
+    mel_basis = librosa.filters.mel(sr, n_fft=hop_length*2, n_mels=n_mels)
+    img = np.dot(mel_basis, np.abs(S))
+    img = np.log10(1+10*img)
     img = img[np.newaxis, ...]
     
     return img
@@ -92,10 +103,10 @@ def preprocess_X(index):
         end = start + (TIME_STEPS * HOP_LENGTH)
         window = y[start:end]
 
-        img = generate_logspectrogram(window, sr, N_MELS, HOP_LENGTH)
+        img = generate_logspectrogram2(window, sr, N_MELS, HOP_LENGTH)
 
         # If not correct shape, skip
-        if img.shape != (1, 256, 256):
+        if img.shape != (1, N_MELS, N_MELS):
             print(f'Incorrect shape {img.shape} for index {index} in split {split}. Skipping...')                
             continue
         
@@ -154,9 +165,9 @@ if __name__=='__main__':
     
     # Initialize objects
     X = { 
-        'training': np.ndarray((0, 1, 256, 256)), 
-        'validation': np.ndarray((0, 1, 256, 256)), 
-        'test': np.ndarray((0, 1, 256, 256)) 
+        'training': np.ndarray((0, 1, N_MELS, N_MELS)), 
+        'validation': np.ndarray((0, 1, N_MELS, N_MELS)), 
+        'test': np.ndarray((0, 1, N_MELS, N_MELS)) 
     }
     Y = {
         'training': np.ndarray((0, 8)),
@@ -194,9 +205,9 @@ if __name__=='__main__':
     
     print(f'Saving objects...')
     s5 = time.time()
-    XPATH = os.path.join(PREPROCESSED_DIR, 'X.h5')
+    XPATH = os.path.join(PREPROCESSED_DIR, 'X_3.h5')
     dd.io.save(XPATH, X)
-    YPATH = os.path.join(PREPROCESSED_DIR, 'Y.h5')
+    YPATH = os.path.join(PREPROCESSED_DIR, 'Y_3.h5')
     dd.io.save(YPATH, Y)
     print_time(time.time() - s5, measure='Elapsed')
     

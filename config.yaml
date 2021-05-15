@@ -1,0 +1,13 @@
+trainingInput:
+  hyperparameters:
+    goal: MAXIMIZE
+    hyperparameterMetricTag: epoch_val_acc
+    maxTrials: 30
+    maxParallelTrials: 2
+    enableTrialEarlyStopping: True
+    params:
+    - parameterName: learning-rate
+      type: DOUBLE
+      minValue: 0.0001
+      maxValue: 1
+      scaleType: UNIT_LOG_SCALE
