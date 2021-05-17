@@ -1,6 +1,6 @@
-BUCKET_NAME=gs://fma_bucket
-JOB_NAME=unet_lrsearch_job1
-JOB_DIR=gs://fma_bucket/${JOB_NAME}/models
+BUCKET_NAME=BUCKET_NAME
+JOB_NAME=JOB_NAME
+JOB_DIR=gs://${BUCKET_NAME}/${JOB_NAME}/models
 REGION=us-central1
 IMAGE_URI=gcr.io/cloud-ml-public/training/pytorch-gpu.1-7
 
@@ -20,6 +20,7 @@ trainingInput:
       scaleType: UNIT_LOG_SCALE
 EOF
 
+# Submit to GCP
 gcloud ai-platform jobs submit training ${JOB_NAME} \
  --package-path trainer/ \
  --module-name trainer.train \
