@@ -17,7 +17,7 @@ def init_layers(m):
         m.bias.data.fill_(0.01)
 
 class UNet(nn.Module):
-    def __init__(self, dropout=0.2):
+    def __init__(self, dropout=0.1):
         super(UNet, self).__init__()
 
         self.start = double_conv(1, 32) 
@@ -41,18 +41,18 @@ class UNet(nn.Module):
     def forward(self, input):
         conv1 = self.start(input) # 1x128x128 -> 16x128x128
         x = self.max_pool(conv1)  # 16x64x64
-#         x = self.dropout(x)
+        x = self.dropout(x)
         
         conv2 = self.down1(x)     # 16x64x64 -> 32x64x64
         x = self.max_pool(conv2)  # 32x32x32
-#         x = self.dropout(x)
+        x = self.dropout(x)
 
         conv3 = self.down2(x)     # 32x32x32 -> 64x32x32
         x = self.max_pool(conv3)  # 64x16x16
-#         x = self.dropout(x)
+        x = self.dropout(x)
         
         x = self.down3(x)         # 64x16x16 -> 64x16x16
-#         x = self.dropout(x)
+        x = self.dropout(x)
         
         x = x.view(x.size(0), -1)
         

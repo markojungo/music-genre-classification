@@ -25,11 +25,6 @@ class CNN1(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=8), # Bx256x128
         )
-
-        # Bx256x1024
-        self._rnnModule = nn.Sequential(
-            nn.GRU(128, 128, batch_first=True, bidirectional=False),
-        )
         
         self._classifier = nn.Sequential(nn.Linear(in_features=32768, out_features=2048),
                                          nn.ReLU(),

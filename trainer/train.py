@@ -17,8 +17,7 @@ import hypertune
 from google.cloud import storage
 
 from trainer.UNet import UNet
-from trainer.RCNN import RCNN
-from trainer.CNN import CNN
+from trainer.CNN1 import CNN1
 
 import trainer.utils as utils
 
@@ -106,10 +105,8 @@ def fit(args):
     model = None
     if args.net == 'UNet':
         model = UNet()
-    elif args.net == 'RCNN':
-        model = RCNN()
-    elif args.net == 'CNN':
-        model = CNN()
+    elif args.net == 'CNN1':
+        model = CNN1()
         
     model = model.to(device)
     
